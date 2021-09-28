@@ -1,0 +1,19 @@
+﻿@page "/países/crear"
+@inject NavigationManager navigationManager
+<h3>Crear país</h3>
+
+<PaísFormulario onValidSubmit="PaísAñadir" País="país" OnCancel="PaísCancelar"/>
+
+@code {
+    private País país = new();
+
+    private async Task PaísAñadir()
+    {
+        Console.WriteLine($"Graba { país.PaísNombre }");
+    }
+
+    private async Task PaísCancelar()
+    {
+        navigationManager.NavigateTo("/países");
+    }
+}

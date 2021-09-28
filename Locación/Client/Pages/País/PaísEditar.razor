@@ -1,0 +1,32 @@
+﻿@page "/países/editar/{PaísID:int}/{códPaís}/{nomPaís}"
+@inject NavigationManager navigationManager
+<h3>Editar país</h3>
+
+<PaísFormulario onValidSubmit="PaísModificar" País="país" OnCancel="PaísCancelar" />
+
+@code {
+    private País país;
+    [Parameter] public int PaísID { get; set; }
+    [Parameter] public string códPaís { get; set; }
+    [Parameter] public string nomPaís { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        país = new()
+        {
+            ID = PaísID,
+            PaísCódigo = códPaís,
+            PaísNombre = nomPaís
+        };
+    }
+
+    private async Task PaísModificar()
+    {
+        Console.WriteLine($"Edita { país.PaísNombre }");
+    }
+
+    private async Task PaísCancelar()
+    {
+        navigationManager.NavigateTo("/países");
+    }
+}

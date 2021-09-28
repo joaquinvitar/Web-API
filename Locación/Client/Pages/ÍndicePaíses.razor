@@ -1,0 +1,84 @@
+﻿@page "/países"
+<h3>Países</h3>
+<a class="btn btn-success" href="países/crear">Nuevo</a>
+<table>
+    <tr>
+        <th>Código</th>
+        <th>Nombre</th>
+    </tr>
+
+    @if (países == null)
+    {
+        <tr>Cargando...</tr>
+    }
+
+    @if (países.Count == 0)
+    {
+        <tr>No existen países.</tr>
+    }
+
+    else
+    {
+        @foreach (var item in países)
+        {
+            <tr>
+                <td>@item.PaísCódigo</td>
+                <td>@item.PaísNombre</td>
+                <td><a class="btn btn-success" href="países/editar/@item.ID/@item.PaísCódigo/@item.PaísNombre">Editar</a></td>
+                <td><button class="btn btn-success" @onclick="()=>PaísEliminar(item)">Eliminar</button></td>
+            </tr>
+        }
+    }
+</table>
+
+<Confirmación @ref="confirmación" onConfirm="PaísGrabarEliminar" onCancel="PaísCancelar">
+    <div>¿Desea eliminar el país?</div>
+</Confirmación>
+
+@code {
+    List<Locación.Shared.Data.Entidades.País> países;
+    Confirmación confirmación;
+    string códPaís = "";
+    string nomPaís = "";
+    Locación.Shared.Data.Entidades.País eliminarPaís;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        países = new()
+        {
+            new Locación.Shared.Data.Entidades.País() { PaísCódigo = "ar", PaísNombre = "Argentina" },
+            new Locación.Shared.Data.Entidades.País() { PaísCódigo = "es", PaísNombre = "España" }
+        };
+    }
+
+    private void PaísAñadir()
+    {
+        Locación.Shared.Data.Entidades.País país = new();
+        país.PaísCódigo = códPaís;
+        país.PaísNombre = nomPaís;
+        países.Add(país);
+        PaísCancelar();
+    }
+
+    private void PaísEliminar(Locación.Shared.Data.Entidades.País país)
+    {
+        confirmación.Mostrar();
+        códPaís = país.PaísCódigo;
+        nomPaís = país.PaísNombre;
+        eliminarPaís = país;
+    }
+
+    private void PaísGrabarEliminar()
+    {
+        países.Remove(eliminarPaís);
+        PaísCancelar();
+    }
+
+    private void PaísCancelar()
+    {
+        confirmación.Ocultar();
+        eliminarPaís = null;
+    }
+}
