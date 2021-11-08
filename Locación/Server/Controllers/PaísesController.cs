@@ -1,6 +1,7 @@
 ﻿using Locación.Shared.Data;
 using Locación.Shared.Data.Entidades;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +21,15 @@ namespace Locación.Server.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<País>> Get()
+        public async Task<ActionResult<List<País>>> Get()
         {
-            return context.Países.ToList();
+            return await context.Países.ToListAsync();
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<País> Get(int id)
+        public async Task<ActionResult<País>> Get(int id)
         {
-            var país = context.Países.Where(x => x.ID == id).FirstOrDefault();
+            var país = await context.Países.Where(x => x.ID == id).Include(x => x.Provincias).FirstOrDefaultAsync();
             if(país == null)
             {
                 return NotFound($"No existe el país con ID igual a {id}.");
@@ -37,12 +38,12 @@ namespace Locación.Server.Controllers
         }
 
         [HttpPost]
-        public ActionResult<País> Post(País país)
+        public async Task<ActionResult<País>> Post(País país)
         {
             try
             {
                 context.Países.Add(país);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return país;
             }
             catch (Exception e)
@@ -52,13 +53,13 @@ namespace Locación.Server.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, [FromBody] País país)
+        public async Task<ActionResult> Put(int id, [FromBody] País país)
         {
             if(id != país.ID)
             {
                 return BadRequest("Datos incorrectos.");
             }
-            var paísOther = context.Países.Where(x => x.ID == id).FirstOrDefault();
+            var paísOther = await context.Países.Where(x => x.ID == id).FirstOrDefaultAsync();
 
             if(paísOther == null)
             {
@@ -70,8 +71,8 @@ namespace Locación.Server.Controllers
 
             try
             {
-                context.Países.Add(paísOther);
-                context.SaveChanges();
+                context.Países.Update(paísOther);
+                await context.SaveChangesAsync();
                 return Ok("Los datos han sido cambiados.");
             }
             catch (Exception e)
@@ -81,9 +82,9 @@ namespace Locación.Server.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var país = context.Países.Where(x => x.ID == id).FirstOrDefault();
+            var país = await context.Países.Where(x => x.ID == id).FirstOrDefaultAsync();
             if (país == null)
             {
                 return NotFound($"No existe el país con ID igual a {id}.");
@@ -92,7 +93,7 @@ namespace Locación.Server.Controllers
             try
             {
                 context.Países.Remove(país);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return Ok($"El país {país.PaísNombre} ha sido eliminado.");
             }
             catch (Exception e)

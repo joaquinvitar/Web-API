@@ -15,7 +15,7 @@ namespace Locación.Shared.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.9")
+                .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Locación.Shared.Data.Entidades.País", b =>
@@ -27,8 +27,8 @@ namespace Locación.Shared.Migrations
 
                     b.Property<string>("PaísCódigo")
                         .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)");
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
 
                     b.Property<string>("PaísNombre")
                         .IsRequired()
@@ -55,8 +55,8 @@ namespace Locación.Shared.Migrations
 
                     b.Property<string>("ProvCódigo")
                         .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)");
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
 
                     b.Property<string>("ProvNombre")
                         .IsRequired()

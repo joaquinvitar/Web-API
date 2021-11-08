@@ -1,4 +1,5 @@
 ﻿using Locación.Shared.Data.Entidades;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Locación.Shared.Data
 {
     public class dataContext : DbContext
     {
-        public DbSet<País>      Países     { get; set; }
+        public DbSet<País> Países { get; set; }
         public DbSet<Provincia> Provincias { get; set; }
 
         public dataContext(DbContextOptions<dataContext> options) : base(options)

@@ -1,79 +1,88 @@
 ﻿@page "/países"
-<h3>Países</h3>
-<a class="btn btn-success" href="países/crear">Nuevo</a>
-<table>
-    <tr>
-        <th>Código</th>
-        <th>Nombre</th>
-    </tr>
+@inject IHttpService http
+
+<h3 style="margin-bottom: 32px;">Lista de "Países"</h3>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th class="list-group-item-secondary">Código</th>
+            <th class="list-group-item-secondary">Nombre</th>
+            <th class="list-group-item-secondary">Editar</th>
+            <th class="list-group-item-secondary">Eliminar</th>
+        </tr>
+    </thead>
 
     @if (países == null)
     {
         <tr>Cargando...</tr>
     }
 
-    @if (países.Count == 0)
+    else if (países.Count == 0)
     {
         <tr>No existen países.</tr>
     }
 
     else
     {
-        @foreach (var item in países)
-        {
-            <tr>
-                <td>@item.PaísCódigo</td>
-                <td>@item.PaísNombre</td>
-                <td><a class="btn btn-success" href="países/editar/@item.ID/@item.PaísCódigo/@item.PaísNombre">Editar</a></td>
-                <td><button class="btn btn-success" @onclick="()=>PaísEliminar(item)">Eliminar</button></td>
-            </tr>
-        }
+        <tbody>
+            @foreach (var item in países)
+            {
+                <tr>
+                    <td style="font-weight: bold">@item.PaísCódigo</td>
+                    <td>@item.PaísNombre</td>
+                    <td><a class="btn btn-outline-info" href="países/editar/@item.ID">Editar</a></td>
+                    <td><button class="btn btn-outline-danger" @onclick="()=>PaísEliminar(item)">Eliminar</button></td>
+                </tr>
+            }
+
+        </tbody>
     }
 </table>
 
-<Confirmación @ref="confirmación" onConfirm="PaísGrabarEliminar" onCancel="PaísCancelar">
-    <div>¿Desea eliminar el país?</div>
+<a class="btn btn-outline-success" href="países/crear">Nuevo</a>
+
+<Confirmación @ref="confirmación" onConfirm="PaísGrabarEliminar" onCancel="PaísCancelar" Título="Eliminar">
+    <div>¿Desea eliminar el país @eliminarPaís.PaísNombre?</div>
 </Confirmación>
 
 @code {
     List<Locación.Shared.Data.Entidades.País> países;
     Confirmación confirmación;
-    string códPaís = "";
-    string nomPaís = "";
     Locación.Shared.Data.Entidades.País eliminarPaís;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-
-        países = new()
-        {
-            new Locación.Shared.Data.Entidades.País() { PaísCódigo = "ar", PaísNombre = "Argentina" },
-            new Locación.Shared.Data.Entidades.País() { PaísCódigo = "es", PaísNombre = "España" }
-        };
+        await Leer();
     }
 
-    private void PaísAñadir()
+    private async Task Leer()
     {
-        Locación.Shared.Data.Entidades.País país = new();
-        país.PaísCódigo = códPaís;
-        país.PaísNombre = nomPaís;
-        países.Add(país);
-        PaísCancelar();
+        var respuestaHttp = await http.Get<List<Locación.Shared.Data.Entidades.País>>("api/países");
+        if (!respuestaHttp.Error)
+        {
+            países = respuestaHttp.Respuesta;
+        }
     }
 
     private void PaísEliminar(Locación.Shared.Data.Entidades.País país)
     {
         confirmación.Mostrar();
-        códPaís = país.PaísCódigo;
-        nomPaís = país.PaísNombre;
         eliminarPaís = país;
     }
 
-    private void PaísGrabarEliminar()
+    private async Task PaísGrabarEliminar()
     {
-        países.Remove(eliminarPaís);
+        var respuesta = await http.Delete($"api/países/{eliminarPaís.ID}");
+
+        if (respuesta.Error)
+        {
+            var body = await respuesta.GetBody();
+        }
+
         PaísCancelar();
+        await Leer();
     }
 
     private void PaísCancelar()

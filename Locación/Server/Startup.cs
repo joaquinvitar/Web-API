@@ -2,13 +2,17 @@ using Locación.Shared.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Linq;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Locación.Server
@@ -34,8 +38,12 @@ namespace Locación.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Locación", Version = "v1" });
             });
 
+            /*
             services.AddControllersWithViews().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+            */
+
+            services.AddControllersWithViews();
             services.AddRazorPages();
         }
 

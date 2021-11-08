@@ -1,4 +1,4 @@
-﻿<EditForm Model="País" OnValidSubmit="onValidSubmit">
+﻿<EditForm Model="@País" OnValidSubmit="onValidSubmit">
     <DataAnnotationsValidator/>
     <div class="form-group">
         <label>Código</label>
@@ -14,8 +14,8 @@
             <ValidationMessage For="@(() => País.PaísNombre)" />
         </div>
     </div>
-    <button class="btn-primary" type="submit">Guardar</button>
-    <button class="btn-secondary" @onclick="OnCancel" type="button">Cancelar</button>
+    <button class="btn btn-outline-primary" type="submit">Guardar</button>
+    <button class="btn btn-outline-secondary" @onclick="OnCancel" type="button">Cancelar</button>
 
 </EditForm>
 

@@ -14,7 +14,7 @@ namespace Locación.Shared.Data.Entidades
         public int    ID         { get; set; }
 
         [Required(ErrorMessage = "* Código de provincia no ingresado.")]
-        [MaxLength(1, ErrorMessage = "* Máximo de caractéres sobrepasado.({1})")]
+        [MaxLength(2, ErrorMessage = "* Máximo de caractéres sobrepasado.({1})")]
         public string ProvCódigo { get; set; }
 
         [Required(ErrorMessage = "* Nombre de provincia no ingresado.")]

@@ -17,31 +17,37 @@
                     @ChildContent
                 </div>
                 <div class="modal-footer">
-                    <button @onclick="onCancel" type="button" class="btn btn-secondary"
-                        data-dismiss="modal">
-                            Cancelar
+                    @if (VerCancelar)
+                    {
+                        <button @onclick="onCancel" type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                            @TextCancelar
                         </button>
-                        <button @onclick="onConfirm" type="button" class="btn btn-primary">
-                            Ok
+                    }
+
+                    @if (VerOk)
+                    {
+                        <button @onclick="onConfirm" type="button" class="btn btn-outline-danger">
+                            @TextOk
                         </button>
+                    }
                 </div>
             </div>
         </div>
     </div>
-    }
 }
 
 @code {
-    private bool MostrarConfirmacion = false;
-    [Parameter] public string Título { get; set; } = "Confirmación";
-    [Parameter] public EventCallback onConfirm { get; set; }
-    [Parameter] public EventCallback onCancel { get; set; }
-    [Parameter] public RenderFragment ChildContent { get; set; }
+        private bool MostrarConfirmacion = false;
+        [Parameter] public bool VerCancelar { get; set; } = true;
+        [Parameter] public bool VerOk { get; set; } = true;
+        [Parameter] public string TextCancelar { get; set; } = "Cancelar";
+        [Parameter] public string TextOk { get; set; } = "Confirmar";
+        [Parameter] public string Título { get; set; } = "Eliminar";
+        [Parameter] public EventCallback onConfirm { get; set; }
+        [Parameter] public EventCallback onCancel { get; set; }
+        [Parameter] public RenderFragment ChildContent { get; set; }
 
-    public void Mostrar()
-    {
-        MostrarConfirmacion = true;
-    }
+        public void Mostrar() => MostrarConfirmacion = true;
 
-    public void Ocultar() => MostrarConfirmacion = false;
+        public void Ocultar() => MostrarConfirmacion = false;
 }

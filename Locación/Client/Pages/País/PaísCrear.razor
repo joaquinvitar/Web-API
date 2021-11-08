@@ -1,6 +1,8 @@
 ﻿@page "/países/crear"
 @inject NavigationManager navigationManager
-<h3>Crear país</h3>
+@inject IHttpService http
+
+<h3 style="margin-bottom: 32px;">Crear "País"</h3>
 
 <PaísFormulario onValidSubmit="PaísAñadir" País="país" OnCancel="PaísCancelar"/>
 
@@ -9,10 +11,17 @@
 
     private async Task PaísAñadir()
     {
-        Console.WriteLine($"Graba { país.PaísNombre }");
+        var httpRespuesta = await http.Post<País>("api/países", país);
+
+        if (httpRespuesta.Error)
+        {
+            var body = await httpRespuesta.GetBody();
+        }
+
+        navigationManager.NavigateTo("/países");
     }
 
-    private async Task PaísCancelar()
+    private void PaísCancelar()
     {
         navigationManager.NavigateTo("/países");
     }

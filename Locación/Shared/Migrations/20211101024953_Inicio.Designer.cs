@@ -9,15 +9,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Locación.Shared.Migrations
 {
     [DbContext(typeof(dataContext))]
-    [Migration("20210817213857_CompletarTablaPaís")]
-    partial class CompletarTablaPaís
+    [Migration("20211101024953_Inicio")]
+    partial class Inicio
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.9")
+                .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Locación.Shared.Data.Entidades.País", b =>
@@ -29,8 +29,8 @@ namespace Locación.Shared.Migrations
 
                     b.Property<string>("PaísCódigo")
                         .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)");
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
 
                     b.Property<string>("PaísNombre")
                         .IsRequired()
@@ -52,6 +52,9 @@ namespace Locación.Shared.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("PaísID")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProvCódigo")
                         .IsRequired()
                         .HasMaxLength(2)
@@ -64,7 +67,28 @@ namespace Locación.Shared.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("PaísID");
+
+                    b.HasIndex(new[] { "ProvCódigo" }, "UQ_País_ProvCódigo")
+                        .IsUnique();
+
                     b.ToTable("Provincias");
+                });
+
+            modelBuilder.Entity("Locación.Shared.Data.Entidades.Provincia", b =>
+                {
+                    b.HasOne("Locación.Shared.Data.Entidades.País", "País")
+                        .WithMany("Provincias")
+                        .HasForeignKey("PaísID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("País");
+                });
+
+            modelBuilder.Entity("Locación.Shared.Data.Entidades.País", b =>
+                {
+                    b.Navigation("Provincias");
                 });
 #pragma warning restore 612, 618
         }

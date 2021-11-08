@@ -1,6 +1,7 @@
 ﻿using Locación.Shared.Data;
 using Locación.Shared.Data.Entidades;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace Locación.Server.Controllers
 {
     [ApiController]
-    [Route("api/Provincias")]
+    [Route("api/Provincia")]
     public class ProvController : ControllerBase
     {
         private readonly dataContext context;
@@ -20,15 +21,15 @@ namespace Locación.Server.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Provincia>> Get()
+        public async Task<ActionResult<List<Provincia>>> Get()
         {
-            return context.Provincias.ToList();
+            return await context.Provincias.Include(x => x.País).ToListAsync();
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Provincia> Get(int id)
+        public async Task<ActionResult<Provincia>> Get(int id)
         {
-            var prov = context.Provincias.Where(x => x.ID == id).FirstOrDefault();
+            var prov = await context.Provincias.Where(x => x.ID == id).Include(x => x.País).FirstOrDefaultAsync();
             if (prov == null)
             {
                 return NotFound($"No existe el país con ID igual a {id}.");
@@ -37,12 +38,12 @@ namespace Locación.Server.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Provincia> Post(Provincia prov)
+        public async Task<ActionResult<Provincia>> Post(Provincia prov)
         {
             try
             {
                 context.Provincias.Add(prov);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return prov;
             }
             catch (Exception e)
@@ -52,13 +53,13 @@ namespace Locación.Server.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, [FromBody] Provincia prov)
+        public async Task<ActionResult> Put(int id, [FromBody] Provincia prov)
         {
             if (id != prov.ID)
             {
                 return BadRequest("Datos incorrectos.");
             }
-            var provOther = context.Provincias.Where(x => x.ID == id).FirstOrDefault();
+            var provOther = await context.Provincias.Where(x => x.ID == id).FirstOrDefaultAsync();
 
             if (provOther == null)
             {
@@ -72,7 +73,7 @@ namespace Locación.Server.Controllers
             try
             {
                 context.Provincias.Update(provOther);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return Ok("Los datos han sido cambiados.");
             }
             catch (Exception e)
@@ -82,9 +83,9 @@ namespace Locación.Server.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var prov = context.Provincias.Where(x => x.ID == id).FirstOrDefault();
+            var prov = await context.Provincias.Where(x => x.ID == id).FirstOrDefaultAsync();
             if (prov == null)
             {
                 return NotFound($"No existe la provincia con ID igual a {id}.");
@@ -93,7 +94,7 @@ namespace Locación.Server.Controllers
             try
             {
                 context.Provincias.Remove(prov);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return Ok($"La provincia {prov.ProvNombre} ha sido eliminada.");
             }
             catch (Exception e)

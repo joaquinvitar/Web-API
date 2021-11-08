@@ -1,31 +1,48 @@
-﻿@page "/países/editar/{PaísID:int}/{códPaís}/{nomPaís}"
+﻿@page "/países/editar/{PaísID:int}"
 @inject NavigationManager navigationManager
-<h3>Editar país</h3>
+@inject IHttpService http
+
+<h3 style="margin-bottom: 32px;">Editar país</h3>
 
 <PaísFormulario onValidSubmit="PaísModificar" País="país" OnCancel="PaísCancelar" />
 
 @code {
     private País país;
     [Parameter] public int PaísID { get; set; }
-    [Parameter] public string códPaís { get; set; }
-    [Parameter] public string nomPaís { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        país = new()
+        await MostrarPaís();
+    }
+
+    private async Task MostrarPaís()
+    {
+        var httpRespuesta = await http.Get<País>($"api/países/{PaísID}");
+
+        if (httpRespuesta.Error)
         {
-            ID = PaísID,
-            PaísCódigo = códPaís,
-            PaísNombre = nomPaís
-        };
+            var body = await httpRespuesta.GetBody();
+        }
+
+        else
+        {
+            país = httpRespuesta.Respuesta;
+        }
     }
 
     private async Task PaísModificar()
     {
-        Console.WriteLine($"Edita { país.PaísNombre }");
+        var httpRespuesta = await http.Put<País>($"api/países/{PaísID}", país);
+
+        if (httpRespuesta.Error)
+        {
+            var body = await httpRespuesta.GetBody();
+        }
+
+        navigationManager.NavigateTo("/países");
     }
 
-    private async Task PaísCancelar()
+    private void PaísCancelar()
     {
         navigationManager.NavigateTo("/países");
     }
